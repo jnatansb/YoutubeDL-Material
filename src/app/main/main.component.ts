@@ -571,7 +571,9 @@ export class MainComponent implements OnInit {
       youtubePassword: this.youtubeAuthEnabled ? this.youtubePassword : null
     };
   }
-
+  private getDownloadType(): FileType {
+    return this.audioOnly ? 'audio' : 'video';
+  }
 
   getSimulatedOutput(): void {
     const urls = this.getURLArray(this.url);
@@ -580,7 +582,7 @@ export class MainComponent implements OnInit {
     // this function should be very similar to downloadClicked()
     const args = this.buildDownloadArgs(); // refactored
 
-    const type = this.audioOnly ? 'audio' : 'video';
+    const type = this.getDownloadType();
 
     const customQualityConfiguration = type === 'audio' ? this.getSelectedAudioFormat() : this.getSelectedVideoFormat();
 
