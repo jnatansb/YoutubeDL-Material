@@ -512,7 +512,7 @@ export class MainComponent implements OnInit {
       this.autoplay = false;
       return true;
     }
-    
+
     // tslint:disable-next-line: max-line-length
     const strRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
     const re = new RegExp(strRegex);
@@ -562,16 +562,23 @@ export class MainComponent implements OnInit {
     }
   }
 
+  private buildDownloadArgs() {
+    return {
+      customArgs: this.customArgsEnabled && this.replaceArgs ? this.customArgs : null,
+      additionalArgs: this.customArgsEnabled && !this.replaceArgs ? this.customArgs : null,
+      customOutput: this.customOutputEnabled ? this.customOutput : null,
+      youtubeUsername: this.youtubeAuthEnabled ? this.youtubeUsername : null,
+      youtubePassword: this.youtubeAuthEnabled ? this.youtubePassword : null
+    };
+  }
+
+
   getSimulatedOutput(): void {
     const urls = this.getURLArray(this.url);
     if (urls.length > 1) return;
 
     // this function should be very similar to downloadClicked()
-    const customArgs = (this.customArgsEnabled && this.replaceArgs ? this.customArgs : null);
-    const additionalArgs = (this.customArgsEnabled && !this.replaceArgs ? this.customArgs : null);
-    const customOutput = (this.customOutputEnabled ? this.customOutput : null);
-    const youtubeUsername = (this.youtubeAuthEnabled && this.youtubeUsername ? this.youtubeUsername : null);
-    const youtubePassword = (this.youtubeAuthEnabled && this.youtubePassword ? this.youtubePassword : null);
+    const args = this.buildDownloadArgs(); // refactored
 
     const type = this.audioOnly ? 'audio' : 'video';
 
@@ -726,7 +733,7 @@ export class MainComponent implements OnInit {
     for (const video_format of Object.values(video_formats)) {
       if ((!video_format['acodec'] || video_format['acodec'] === 'none')
         && video_format['expected_filesize']
-        && parsed_formats['best_audio_format']?.filesize) 
+        && parsed_formats['best_audio_format']?.filesize)
           video_format['expected_filesize'] += parsed_formats['best_audio_format'].filesize;
     }
 
@@ -782,7 +789,7 @@ export class MainComponent implements OnInit {
           const container = this.current_download['container'];
           const is_playlist = this.current_download['file_uids'].length > 1;
           const type = this.current_download['type'];
-          this.current_download = null;  
+          this.current_download = null;
           this.downloadHelper(container, type, is_playlist, false);
         } else if (this.current_download['finished'] && this.current_download['error']) {
           this.downloadingfile = false;
@@ -809,12 +816,12 @@ export class MainComponent implements OnInit {
     /**
    * Format bytes as human-readable text.
    * From: https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string
-   * 
+   *
    * @param bytes Number of bytes.
-   * @param si True to use metric (SI) units, aka powers of 1000. False to use 
+   * @param si True to use metric (SI) units, aka powers of 1000. False to use
    *           binary (IEC), aka powers of 1024.
    * @param dp Number of decimal places to display.
-   * 
+   *
    * @return Formatted string.
    */
   humanFileSize(bytes: number, si=true, dp=1) {
@@ -824,8 +831,8 @@ export class MainComponent implements OnInit {
       return bytes + ' B';
     }
 
-    const units = si 
-      ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] 
+    const units = si
+      ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
       : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
     let u = -1;
     const r = 10**dp;
