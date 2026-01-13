@@ -575,6 +575,16 @@ export class MainComponent implements OnInit {
     return this.audioOnly ? 'audio' : 'video';
   }
 
+  private getCropFileSettings() {
+    if (!this.cropFile) return null;
+
+    return {
+      cropFileStart: this.cropFileStart,
+      cropFileEnd: this.cropFileEnd
+    };
+  }
+
+
   getSimulatedOutput(): void {
     const urls = this.getURLArray(this.url);
     if (urls.length > 1) return;
@@ -586,14 +596,7 @@ export class MainComponent implements OnInit {
 
     const customQualityConfiguration = type === 'audio' ? this.getSelectedAudioFormat() : this.getSelectedVideoFormat();
 
-    let cropFileSettings = null;
-
-    if (this.cropFile) {
-      cropFileSettings = {
-        cropFileStart: this.cropFileStart,
-        cropFileEnd: this.cropFileEnd
-      }
-    }
+    const cropFileSettings = this.getCropFileSettings();
 
     this.postsService.generateArgs(this.url, type as FileType, (customQualityConfiguration || this.selectedQuality === '' || typeof this.selectedQuality !== 'string' ? null : this.selectedQuality),
       customQualityConfiguration, customArgs, additionalArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
